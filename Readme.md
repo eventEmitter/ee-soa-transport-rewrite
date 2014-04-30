@@ -1,6 +1,9 @@
 #ee-soa-transport-rewrite
 Middleware to modify requests sent to a service. This module is under heavy development.
 
+Todo: Wrap all in a middleware
+Todo: Add url rewrites
+Todo: Add placeholders in rules
 Todo: The rule chaining happens "in place" which means the initial rewrite is modified when chained. This should be changed.
 
 ##Rewrites
