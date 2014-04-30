@@ -33,13 +33,13 @@ and transformation.
 
 
 ###TransformingLoader
-The basic loader takes a loader and a transformer (see transformers). The TransformingLoader passes the ruleset returned
+The basic loader takes a loader and a transformer (see transformers). The TransformingLoader passes the rule set returned
 by the loader to the transformer, which can transform the passed rules in any desired way before handing it back to the
 callback.
 
 ###InMemoryLoader
 A loader used to load rules from memory i.e. collections of rules. This loader is mainly for testing. The InMemoryLoader
-itself is a TransformingLoader which uses a FilterTransformer to reduce the full ruleset to the rules which match the
+itself is a TransformingLoader which uses a FilterTransformer to reduce the full rule set to the rules which match the
 specified key property e.g. `domain`. By default, the property which is taken into account is named `key`.
 
     var rules  = [
@@ -91,4 +91,4 @@ Caches used with the cached loader must adhere to a simple interface:
         , set:  function(key, value){}
     }
 
-Different caches are alway injected into the loaders which makes them inherently testable.
+Different caches are always injected into the loaders which makes them inherently testable.
