@@ -1,0 +1,36 @@
+{
+    "name": "ee-soa-transport-rewrite",
+    "description": "Rewriting middleware for the ee-soa-transports",
+    "version": "0.1.0",
+    "homepage": "https://github.com/eventEmitter/ee-soa-transport-rewrite",
+    "author": {
+        "name": "Michael Rüfenacht"
+        , "email": "<ruefe@rcky.ch>"
+    },
+    "licence": "MIT",
+    "engines": {
+        "node"  : ">=v0.10.25"
+    },
+    "repository": {
+        "url"   : "https://github.com/eventEmitter/ee-soa-transport-rewrite",
+        "type"  : "git"
+    },
+    "bugs": {
+        "url"   : "https://github.com/eventEmitter/ee-soa-transport-rewrite/issues"
+    },
+
+  "version": "0.0.1",
+  "dependencies": {
+    "ee-class": "1.0.*",
+    "ee-orm": "0.2.*",
+    "ee-mysql-connection": "0.1.*",
+    "ee-postgres-connection": "0.1.*",
+    "ee-types": "0.1.*",
+    "mocha": "1.18.*"
+  },
+  "optionalDependencies": {},
+  "keywords": [],
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec --check-leaks"
+  }
+}
