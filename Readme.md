@@ -4,6 +4,8 @@ Middleware to modify requests sent to a service. This module is under heavy deve
   - Todo: Wrap all in a middleware
   - Todo: Add url rewrites
   - Todo: Add placeholders in rules
+  - Todo: Add prepend rules
+  - Todo: Add templating rules... probably an extends rule...
   - Todo: The rule chaining happens "in place" which means the initial rewrite is modified when chained. This should be changed.
 
 ##Rewrites

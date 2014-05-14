@@ -1,30 +1,10 @@
 var assert      = require('assert');
 
-var rewrites    = require('../lib/rewrite');
+var rewrites    = require('../lib/rewrite'),
+    Request     = require('./utils/MockRequest');
 
-var Mock = function(){
-    this.headers = {
-        select: ''
-            , filter: 'id > 10'
-            , override: 'toOverride'
-            , language: 'en'
-    };
 
-    this.hasHeader = function(key){
-        return !!this.headers[key];
-    };
-
-    this.getHeader = function(key, parse){
-        return this.headers[key] || null;
-    };
-
-    this.setHeader = function(key, value){
-        this.headers[key] = value;
-        return this;
-    };
-};
-
-var MockRequest = new Mock();
+var MockRequest = new Request();
 
 var MockRewrite = {
     executed: 0
@@ -39,7 +19,9 @@ describe('Rewrite', function(){
         base    = new rewrites.Append('test.com', 'filter', ', deleted=null'),
         app     = new rewrites.Append('test.com', 'filter', ', deleted=null'),
         overr   = new rewrites.Override('test.com', 'override', 'overwritten'),
-        ens     = new rewrites.Ensure('test.com', 'select', '*');
+        ens     = new rewrites.Ensure('test.com', 'select', '*'),
+
+        template = new rewrites.Template('test.com', 'template', 'index.nunjucks.hmtl');
 
 
     it('should do a proper setup', function(){
@@ -54,7 +36,7 @@ describe('Rewrite', function(){
     });
 
     it('should be able to take children and execute them', function(){
-        var req = new Mock(),
+        var req = new Request(),
             re  = base.then(overr).then(ens);
 
         assert(re.hasChildren());
@@ -98,6 +80,19 @@ describe('Rewrite', function(){
                 langens.execute(MockRequest, function(err){
                     assert.equal(null, err);
                     assert.equal('en', MockRequest.getHeader('language'));
+                });
+            });
+        });
+
+    });
+
+    describe('Template', function(){
+        describe('#execute', function(){
+            assert(!MockRequest.template);
+            it('set the template property', function(){
+                template.execute(MockRequest, function(err){
+                    assert.equal(null, err);
+                    assert.equal('index.nunjucks.hmtl', MockRequest.template);
                 });
             });
         });
