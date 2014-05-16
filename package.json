@@ -20,9 +20,6 @@
   },
   "dependencies": {
     "ee-class": "1.0.*",
-    "ee-orm": "0.2.*",
-    "ee-mysql-connection": "0.1.*",
-    "ee-postgres-connection": "0.1.*",
     "ee-types": "0.1.*",
     "mocha": "1.18.*",
     "ee-event-emitter": "0.1.*"

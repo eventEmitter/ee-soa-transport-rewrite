@@ -6,33 +6,7 @@ function log(){
     console.log(arguments);
 }
 
-/**
- * Todo: add inherits rewrite
- * @type {exports.InMemoryLoader}
- */
 
-var ORM         = require('ee-orm');
-var orm = new ORM({
-    "public": {
-        type: 'postgres'
-        , hosts: [
-            {
-                host:       '127.0.0.1'
-                , username: 'michaelruefenacht'
-                , password: ''
-                , port:     5432
-                , mode:     'readwrite'
-                , database: 'events'
-            }
-        ]
-    }
-});
-
-orm.on('load', function(err){
-    if(err) {
-        log(err);
-        return;
-    }
 
     var loader = new loaders.InMemoryLoader(
         [
@@ -46,7 +20,7 @@ orm.on('load', function(err){
         ]
         , 'domain');
 
-    loader = new loaders.DatabaseLoader(orm.public.rewrites);
+
 
     var rewriteLoader = new loaders.RewriteLoader(loader);
     var Mock = function(){
@@ -83,4 +57,3 @@ orm.on('load', function(err){
             console.log(request.getHeader('select'));
         });
     });
-});

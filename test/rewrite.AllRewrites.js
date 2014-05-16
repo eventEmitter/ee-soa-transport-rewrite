@@ -16,12 +16,13 @@ var MockRewrite = {
 
 describe('Rewrite', function(){
     var rew     = new rewrites.Rewrite(),
-        base    = new rewrites.Append('test.com', 'filter', ', deleted=null'),
-        app     = new rewrites.Append('test.com', 'filter', ', deleted=null'),
-        overr   = new rewrites.Override('test.com', 'override', 'overwritten'),
-        ens     = new rewrites.Ensure('test.com', 'select', '*'),
+        base    = new rewrites.Append({domain:'test.com', field:'filter', value:', deleted=null'}),
+        app     = new rewrites.Append({domain:'test.com', field:'filter', value:', deleted=null'}),
+        overr   = new rewrites.Override({domain:'test.com', field:'override', value:'overwritten'}),
+        ens     = new rewrites.Ensure({domain:'test.com', field:'select', value:'*'}),
 
-        template = new rewrites.Template('test.com', 'template', 'index.nunjucks.hmtl');
+        template = new rewrites.Template({domain:'test.com', field:'template', value:'index.nunjucks.hmtl'}),
+        path = new rewrites.Path({domain:'test.com', field:'/somewhere/(\\d+)', value:'/somewhere-else/$1'});
 
 
     it('should do a proper setup', function(){
@@ -100,7 +101,6 @@ describe('Rewrite', function(){
     });
 
     describe('Append', function(){
-
         describe('#execute', function(){
             assert.equal('id > 10', MockRequest.getHeader('filter'));
             it('should append the specified value', function(){
@@ -111,6 +111,18 @@ describe('Rewrite', function(){
             });
         });
 
+    });
+
+    describe('Path', function(){
+        describe('#execute', function(){
+            assert.equal('/somewhere/10', MockRequest.pathname);
+            it('should transform the path', function(){
+                path.execute(MockRequest, function(err){
+                    assert.equal(null, err);
+                    assert.equal('/somewhere-else/10', MockRequest.pathname);
+                });
+            });
+        });
     });
 
 });
