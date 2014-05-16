@@ -1,7 +1,6 @@
 #ee-soa-transport-rewrite
 Middleware to modify requests sent to a service. This module is under heavy development.
 
-  - Todo: Wrap all in a middleware
   - Todo: Add url rewrites
   - Todo: Add placeholders in rules
   - Todo: Add prepend rules
@@ -36,16 +35,28 @@ and transformation.
         }
     };
 
+###FilterLoader
+A Loader that takes another loader and filters its results using the passed comparator. The comparator can be either a string
+which denotes the name of the rule property which is relevant for matching or a function. The later
+takes the key passed to the loader and a rule object to match to. The comparator has to adhere to
+the following contract:
+
+    1. Return true if the key can be matched with the rule
+    2. Return false if the key can not be matched with the rule
+    3. Throw an error if the rule has an unexpected form
+
+If there is no comparator passed, the filter loader creates one itself:
+    By default, the property which is taken into account is named `key` (rules are compared by their `key` property).
 
 ###TransformingLoader
-The basic loader takes a loader and a transformer (see transformers). The TransformingLoader passes the rule set returned
+Takes a transformer (see transformers). The TransformingLoader passes the rule set returned
 by the loader to the transformer, which can transform the passed rules in any desired way before handing it back to the
 callback.
 
 ###InMemoryLoader
 A loader used to load rules from memory i.e. collections of rules. This loader is mainly for testing. The InMemoryLoader
-itself is a TransformingLoader which uses a FilterTransformer to reduce the full rule set to the rules which match the
-specified key property e.g. `domain`. By default, the property which is taken into account is named `key`.
+itself is a FilterLoader which reduces the full rule set to the rules which match a comparator (which can be passed or
+is created internally, see FilterLoader).
 
     var rules  = [
         {domain: 'somewhere.com' ... }

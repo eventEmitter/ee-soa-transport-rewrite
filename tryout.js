@@ -71,7 +71,7 @@ orm.on('load', function(err){
         };
     };
 
-    console.log('halo');
+
 
     var request = new Mock();
     var host = 'test1.com';

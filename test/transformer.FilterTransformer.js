@@ -20,13 +20,13 @@ describe('FilterTransformer', function(){
 
     var transformer     = new transformers.FilterTransformer(function(key, current){
             if(!('key' in current)){
-                return null;
+                throw new Error();
             }
             return current.key == key;
         }),
         domainFilter    = new transformers.FilterTransformer(function(key, current){
             if(!('domain' in current)){
-                return null;
+                throw new Error();
             }
             return current.domain == key;
         });
