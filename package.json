@@ -1,7 +1,7 @@
 {
     "name"                              : "ee-soa-transport-rewrite"
     , "description"                     : "Rewriting middleware for the ee-soa-transports"
-    , "version"                         : "0.1.0"
+    , "version"                         : "0.1.1"
     , "homepage"                        : "https://github.com/eventEmitter/ee-soa-transport-rewrite"
     , "author"                          : {
           "name"                        : "Michael Rüfenacht"
@@ -21,8 +21,10 @@
     , "dependencies": {
           "ee-class"                    : "1.0.*"
         , "ee-types"                    : "0.1.*"
-        , "mocha"                       : "1.18.*"
         , "ee-event-emitter"            : "0.1.*"
+    }
+    , "devDependencies": {
+          "mocha"                       : "1.18.*"
     }
     , "optionalDependencies"            : {}
     , "keywords"                        : ["ee", "soa", "transport", "rest"]

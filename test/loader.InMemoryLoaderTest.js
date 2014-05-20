@@ -1,6 +1,6 @@
 var assert  = require('assert');
 
-var loaders = require('./../lib/loader');
+var loaders = require('../lib/loader');
 
 /**
  * Simplified ruleset

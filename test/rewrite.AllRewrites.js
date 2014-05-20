@@ -22,7 +22,7 @@ describe('Rewrite', function(){
         ens     = new rewrites.Ensure({domain:'test.com', field:'select', value:'*'}),
 
         template = new rewrites.Template({domain:'test.com', field:'template', value:'index.nunjucks.hmtl'}),
-        path = new rewrites.Path({domain:'test.com', field:'/somewhere/(\\d+)', value:'/somewhere-else/$1'});
+        path = new rewrites.Path({domain:'test.com', path:/\/somewhere\/(\d+)/, value: '/somewhere-else/$1' });
 
 
     it('should do a proper setup', function(){

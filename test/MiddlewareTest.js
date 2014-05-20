@@ -6,14 +6,15 @@ var loaders     = require('../lib/loader'),
 
 var loader = new loaders.InMemoryLoader(
     [
-        {domain: 'test1.com', name: 'ensure',   field: 'range', value: '1-10'},
-        {domain: 'test1.com', name: 'append',   field: 'filter', value: ', deleted=null' },
-        {domain: 'test1.com', name: 'override', field: 'select', value: '*' },
-        {domain: 'test1.com', name: 'template', field: '', value: 'index.html' },
-        {domain: 'test2.com', name: 'alias',    field: '', value: 'rewritten.com' },
-        {domain: 'rewritten.com', name: 'ensure', field: 'range', value: '1-20'},
-        {domain: 'rewritten.com', name: 'append', field: 'filter', value: ', deleted!=null'},
-        {domain: 'test2.com', name: 'append', field: 'filter', value: ', nonsense' },
+        {domain: 'test1.com', path: null, name: 'ensure',   field: 'range', value: '1-10'},
+        {domain: 'test1.com', path: null, name: 'append',   field: 'filter', value: ', deleted=null' },
+        {domain: 'test1.com', path: null, name: 'override', field: 'select', value: '*' },
+        {domain: 'test1.com', path: null, name: 'template', field: '', value: 'index.html' },
+        {domain: 'test1.com', path: /\/somewhere\/(\d+)/, name: 'path', field: '', value: '/somewhere-else/$1' },
+        {domain: 'test2.com', path: null, name: 'alias',    field: '', value: 'rewritten.com' },
+        {domain: 'rewritten.com', path: null, name: 'ensure', field: 'range', value: '1-20'},
+        {domain: 'rewritten.com', path: null, name: 'append', field: 'filter', value: ', deleted!=null'},
+        {domain: 'test2.com', path: null, name: 'append', field: 'filter', value: ', nonsense' },
     ]
     , 'domain');
 
@@ -38,6 +39,10 @@ describe('Middleware', function(){
 
             it('should set the template', function(){
                 assert.equal(req.template, 'index.html');
+            });
+
+            it('should rewrite a matching path', function(){
+                assert.equal(req.pathname, '/somewhere-else/10');
             });
         });
     });
