@@ -30,7 +30,21 @@ describe('Rewrite', function(){
 
         param1 = new rewrites.Parameter({domain: 'test.com', field:'testosteron', value: true}),
         param2 = new rewrites.Parameter({domain: 'test.com', field:'something', value: 1000}),
-        param3 = new rewrites.Parameter({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }});
+        param3 = new rewrites.Parameter({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }}),
+        param4 = new rewrites.Parameter({domain: 'test.com', path: /\/images\/(\d)(\d).*/, field: 'matches', value: function(match){ return match; }}),
+        imageParam = new rewrites.Parameter(
+            {
+                domain: 'test.com',
+                path: /\/images\/(\d+)\/[^\/]*\/([^\/]*)\/(\d+)\/(\d+)/,
+                field: 'imageurl',
+                value: function(match){
+                    return {
+                        id: match[1],
+                        mode:match[2],
+                        height:match[3],
+                        width:match[4]
+                    };
+                }});
 
 
     it('should do a proper setup', function(){
@@ -158,21 +172,33 @@ describe('Rewrite', function(){
 
     describe('Parameter', function(){
         describe('#execute', function(){
-            param1.then(param2).then(param3);
+            param1.then(param2).then(param3).then(param4).then(imageParam);
 
-            param1.execute(MockRequest, function(err){
+            var req = new Request('test.com', '/images/100/some-seo-name/crop/800/600');
+            param1.execute(req, function(err){
                 assert(!err);
                 it('should append a rewriteParameters object', function(){
-                    assert('rewriteParameters' in MockRequest);
+                    assert('rewriteParameters' in req);
                 });
 
                 it('should have set the values', function(){
-                    assert.strictEqual(MockRequest.rewriteParameters['testosteron'], true);
-                    assert.strictEqual(MockRequest.rewriteParameters['something'], 1000);
+                    assert.strictEqual(req.rewriteParameters['testosteron'], true);
+                    assert.strictEqual(req.rewriteParameters['something'], 1000);
                 });
 
                 it('and invoke functions', function(){
-                    assert.strictEqual(MockRequest.rewriteParameters['whatTimeIsIt'], 'Flaava Flave');
+                    assert.strictEqual(req.rewriteParameters['whatTimeIsIt'], 'Flaava Flave');
+                });
+
+                it('and pass the match object if it is a regexp in the path', function(){
+                    var match = req.rewriteParameters['matches'];
+                    assert.equal(match[1], '1');
+                    assert.equal(match[2], '0');
+                });
+
+                it('and pass the match object to the function and evaluate it', function(){
+                    var match = req.rewriteParameters['imageurl'];
+                    assert.deepEqual(match, { id: '100', mode: 'crop', height: '800', width: '600' });
                 });
             });
 
