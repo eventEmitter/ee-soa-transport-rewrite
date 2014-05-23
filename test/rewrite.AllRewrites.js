@@ -26,7 +26,11 @@ describe('Rewrite', function(){
 
         option1 = new rewrites.Option({domain: 'test.com', field:'testosteron', value: true}),
         option2 = new rewrites.Option({domain: 'test.com', field:'something', value: 1000}),
-        option3 = new rewrites.Option({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }})
+        option3 = new rewrites.Option({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }}),
+
+        param1 = new rewrites.Parameter({domain: 'test.com', field:'testosteron', value: true}),
+        param2 = new rewrites.Parameter({domain: 'test.com', field:'something', value: 1000}),
+        param3 = new rewrites.Parameter({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }});
 
 
     it('should do a proper setup', function(){
@@ -146,6 +150,29 @@ describe('Rewrite', function(){
 
                 it('and invoke functions', function(){
                     assert.strictEqual(MockRequest.rewriteOptions['whatTimeIsIt'], 'Flaava Flave');
+                });
+            });
+
+        });
+    });
+
+    describe('Parameter', function(){
+        describe('#execute', function(){
+            param1.then(param2).then(param3);
+
+            param1.execute(MockRequest, function(err){
+                assert(!err);
+                it('should append a rewriteParameters object', function(){
+                    assert('rewriteParameters' in MockRequest);
+                });
+
+                it('should have set the values', function(){
+                    assert.strictEqual(MockRequest.rewriteParameters['testosteron'], true);
+                    assert.strictEqual(MockRequest.rewriteParameters['something'], 1000);
+                });
+
+                it('and invoke functions', function(){
+                    assert.strictEqual(MockRequest.rewriteParameters['whatTimeIsIt'], 'Flaava Flave');
                 });
             });
 

@@ -15,7 +15,7 @@ The `name` of the rule determines the corresponding rewrite class:
   - **override** overrides the header `field` with `value`.
   - **path** modifies the requested pathname `path` to `value` (use to map to api endpoints).
   - **template** sets a template variable, basically `request.template = rule.value`
-  - **option** allows setting arbitrary values to an options hashtable called `rewriteOptions` ( `request.rewriteOptions[field] = value`)
+  - **parameter** allows setting arbitrary values to an parameters hashtable called `rewriteParameters` ( `request.rewriteParameters[field] = value`)
 
 Further planned but not implemented or tested yet are:
   - **extend** extends an existing ruleset
