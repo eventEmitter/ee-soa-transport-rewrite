@@ -1,27 +1,43 @@
 #ee-soa-transport-rewrite
 Middleware to modify requests sent to a service. This module is under heavy development.
 
-  - Todo: Add url rewrites
-  - Todo: Add placeholders in rules
-  - Todo: Add prepend rules
-  - Todo: Add templating rules... probably an extends rule...
-  - Todo: The rule chaining happens "in place" which means the initial rewrite is modified when chained. This should be changed.
-
 ##Rewrites
 The module provides a basic set of rewrites. Rewrites are executable objects which modify a request based on a rule, to
-use the internal rewrites, the rules must at least have the following form:
+use the internal rewrites, the rules must at least have the following form. The middleware matches the domain and the
+path against the current http request to choose rules (see matching).
 
-    var rule = { name: 'ensure', field: 'range', value: '1-10', domain: 'test.com', priority: 1 }
+    var rule = { name: ..., path: ..., field: ..., value: ..., domain: ... }
 
-This rule corresponds to an Ensure rewrite which ensures that the passed request has a header named `range` and sets a
-default value if not. Rewrites can be executed.
+The `name` of the rule determines the corresponding rewrite class:
 
-    var rewrite = new Ensure(rule.domain, rule.field, rule.value, rule.priority, loader);
+  - *append* appends the specified `value` to the header specified in `field`.
+  - *ensure* checks if the header specified in `field` is present. If not it is set to `field`.
+  - *override* overrides the header `field` with `value`.
+  - *path* modifies the requested pathname `path` to `value` (use to map to api endpoints).
+  - *template* sets a template variable, basically `request.template = rule.value`
+
+Further planned but not implemented or tested yet are:
+  - *extend* extends an existing ruleset
+  - *option* allows setting arbitrary values to an options hashtable
+
+Consider the following example:
+
+    var rule    = { domain: 'test.com', path: '/detail', name: 'ensure', field: 'select', value: '*' }
+    // is transformed to
+    var rewrite = new Ensure(rule, ...);
+    // and executed on the request
     rewrite.execute(request, function(err){});
 
-Rewrites can be combined to a chain which then is executed sequentially.
+Rewrites can be combined to a chain which then is executed sequentially (for development).
 
     rewrite.then(new Ensure(...)).execute(request, function(err){});
+
+###Matching
+The matching of the `path` of the rules is type based:
+
+    - if the path is `null` or '*' it is applied to all requests (which match the domain)
+    - if the path is of type string it is exactly matched e.g. `key == path`
+    - if the path is of type RegExp, a regexp matching is performed
 
 ##Loaders
 The rewrite module uses loaders to load rules from different sources. All loaders can be nested to combine loading/caching
@@ -72,23 +88,15 @@ and taken from there if accessed again. This allows caching of slow rule sources
 disk.
 
 ###DatabaseLoader
-Is currently in development, it probably does not make sense to have a default implementation. In our concrete case we
-use the `ee-orm` to load rules based on a key. The Database loader is very likely to be changed.
-
-    load: function(domain, callback) {
-        this._orm.call({domain:domain}).find(function(err, result){
-            callback(err, result)
-        });
-    }
+Is currently in development, it probably does not make sense to have a default implementation.
 
 ###RewriteLoader
 Is a transforming loader which creates `rewrite.Rewrite` instances (or subclasses) from the rulesets to get executable
-rewrites and can be seen as a factory.
+rewrites and can be seen as a factory (internally uses the `transformer.FactoryTransformer`.
 
 ##Transformers
-Transformers are classes/objects to transform the loaded rulesets (a loader can be its own transformer!). Below an example
-of a transformer that simply filters the rules based on the key value passed to the loader, which is more or less how the
-`FilterTransformer` works.
+Transformers are classes/objects to transform the loaded rulesets of a transformer that simply filters the rules based
+on the key value passed to the loader.
 
     var transformer = {
         transform: function(key, resultset, callback){
@@ -97,6 +105,8 @@ of a transformer that simply filters the rules based on the key value passed to 
             }));
         }
     }
+
+    var loader = new TransformingLoader(transformer, {load: function(err, cb){ cb(null, rules}; }};
 
 ##Caches
 Caches used with the cached loader must adhere to a simple interface:
@@ -108,3 +118,8 @@ Caches used with the cached loader must adhere to a simple interface:
     }
 
 Different caches are always injected into the loaders which makes them inherently testable.
+
+  - Todo: Add prepend rules
+  - Todo: Add templating rules... probably an extends rule...
+  - Todo: The rule chaining happens "in place" which means the initial rewrite is modified when chained. This should be changed.
+  - Todo: Add caching
