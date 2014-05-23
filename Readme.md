@@ -15,10 +15,10 @@ The `name` of the rule determines the corresponding rewrite class:
   - **override** overrides the header `field` with `value`.
   - **path** modifies the requested pathname `path` to `value` (use to map to api endpoints).
   - **template** sets a template variable, basically `request.template = rule.value`
+  - **option** allows setting arbitrary values to an options hashtable called `rewriteOptions` ( `request.rewriteOptions[field] = value`)
 
 Further planned but not implemented or tested yet are:
   - **extend** extends an existing ruleset
-  - **option** allows setting arbitrary values to an options hashtable
 
 Consider the following example:
 
@@ -27,6 +27,8 @@ Consider the following example:
     var rewrite = new Ensure(rule, ...);
     // and executed on the request
     rewrite.execute(request, function(err){});
+
+If the `value` field is of type 'function', it gets executed every time the rewrite rule is applied (e.g. a timing function)
 
 Rewrites can be combined to a chain which then is executed sequentially (for development).
 
@@ -116,6 +118,11 @@ Caches used with the cached loader must adhere to a simple interface:
         , get:  function(key){}
         , set:  function(key, value){}
     }
+
+#Changelog
+##v0.1.2
+    - added Option rewrite rule
+    - values which are of type function are evaluated now
 
 Different caches are always injected into the loaders which makes them inherently testable.
 

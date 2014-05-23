@@ -22,7 +22,11 @@ describe('Rewrite', function(){
         ens     = new rewrites.Ensure({domain:'test.com', field:'select', value:'*'}),
 
         template = new rewrites.Template({domain:'test.com', field:'template', value:'index.nunjucks.hmtl'}),
-        path = new rewrites.Path({domain:'test.com', path:/\/somewhere\/(\d+)/, value: '/somewhere-else/$1' });
+        path = new rewrites.Path({domain:'test.com', path:/\/somewhere\/(\d+)/, value: '/somewhere-else/$1' }),
+
+        option1 = new rewrites.Option({domain: 'test.com', field:'testosteron', value: true}),
+        option2 = new rewrites.Option({domain: 'test.com', field:'something', value: 1000}),
+        option3 = new rewrites.Option({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }})
 
 
     it('should do a proper setup', function(){
@@ -122,6 +126,29 @@ describe('Rewrite', function(){
                     assert.equal('/somewhere-else/10', MockRequest.pathname);
                 });
             });
+        });
+    });
+
+    describe('Option', function(){
+        describe('#execute', function(){
+            option1.then(option2).then(option3);
+
+            option1.execute(MockRequest, function(err){
+                assert(!err);
+                it('should append a rewriteOptions object', function(){
+                    assert('rewriteOptions' in MockRequest);
+                });
+
+                it('should have set the values', function(){
+                    assert.strictEqual(MockRequest.rewriteOptions['testosteron'], true);
+                    assert.strictEqual(MockRequest.rewriteOptions['something'], 1000);
+                });
+
+                it('and invoke functions', function(){
+                    assert.strictEqual(MockRequest.rewriteOptions['whatTimeIsIt'], 'Flaava Flave');
+                });
+            });
+
         });
     });
 

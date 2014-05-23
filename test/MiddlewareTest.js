@@ -11,7 +11,7 @@ var loader = new loaders.InMemoryLoader(
         {domain: 'test1.com', path: null, name: 'override', field: 'select', value: '*' },
         {domain: 'test1.com', path: null, name: 'template', field: '', value: 'index.html' },
         {domain: 'test1.com', path: /\/somewhere\/(\d+)/, name: 'path', field: '', value: '/somewhere-else/$1' },
-        {domain: 'test2.com', path: null, name: 'alias',    field: '', value: 'rewritten.com' },
+        {domain: 'test1.com', path: null, name: 'option', field: 'test', value: 'works' },
         {domain: 'rewritten.com', path: null, name: 'ensure', field: 'range', value: '1-20'},
         {domain: 'rewritten.com', path: null, name: 'append', field: 'filter', value: ', deleted!=null'},
         {domain: 'test2.com', path: null, name: 'append', field: 'filter', value: ', nonsense' },
@@ -43,6 +43,11 @@ describe('Middleware', function(){
 
             it('should rewrite a matching path', function(){
                 assert.equal(req.pathname, '/somewhere-else/10');
+            });
+
+            it('should append options', function(){
+                assert(!!req.rewriteOptions);
+                assert.equal(req.rewriteOptions['test'], 'works');
             });
         });
     });
