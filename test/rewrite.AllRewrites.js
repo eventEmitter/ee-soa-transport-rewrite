@@ -166,7 +166,6 @@ describe('Rewrite', function(){
                     assert.strictEqual(MockRequest.rewriteOptions['whatTimeIsIt'], 'Flaava Flave');
                 });
             });
-
         });
     });
 
@@ -202,6 +201,36 @@ describe('Rewrite', function(){
                 });
             });
 
+        });
+    });
+
+    describe('Method', function(){
+        describe('#execute', function(){
+            var   getToPut = new rewrites.Method({domain:'test.com', path:null, field: 'GET', value: 'Put'})
+                , toPut     = new rewrites.Method({domain: 'test.com', path: null, value: 'Put'})
+                , request   = new Request('test.com')
+                , requestPost = new Request('test.com', null, 'post');
+
+            it('should leave requests that do not match the incoming method untouched', function(done){
+                getToPut.execute(requestPost, function(err){
+                    assert.equal('post', requestPost.method);
+                    done(err);
+                });
+            });
+
+            it('should act case insensitively and set the correct new method it the incoming method matches', function(done){
+                getToPut.execute(request, function(err){
+                    assert.equal('put', request.method);
+                    done(err);
+                });
+            });
+
+            it('should modify every request if the incoming method is not set', function(done){
+                toPut.execute(requestPost, function(err){
+                    assert.equal('put', requestPost.method);
+                    done(err);
+                });
+            });
         });
     });
 

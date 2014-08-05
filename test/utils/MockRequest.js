@@ -1,5 +1,5 @@
 
-module.exports = function MockRequest(hostname, pathname) {
+module.exports = function MockRequest(hostname, pathname, method) {
     this.headers = {
         select: ''
         , filter: 'id > 10'
@@ -9,6 +9,7 @@ module.exports = function MockRequest(hostname, pathname) {
 
     this.hostname = hostname || 'test.ch';
     this.pathname = pathname || '/somewhere/10';
+    this.method   = (method) ? method.toLowerCase() : 'get';
 
     this.hasHeader = function(key){
         return !!this.headers[key];
