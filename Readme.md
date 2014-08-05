@@ -13,6 +13,7 @@ The `name` of the rule determines the corresponding rewrite class:
   - **append** appends the specified `value` to the header specified in `field`.
   - **ensure** checks if the header specified in `field` is present. If not it is set to `field`.
   - **override** overrides the header `field` with `value`.
+  - **method** overrides the method of the request if the `field` value matches the incoming request method (rewrites all if `field` is not set) with its `value`
   - **path** modifies the requested pathname `path` to `value` (use to map to api endpoints).
   - **template** sets a template variable, basically `request.template = rule.value`
   - **parameter** allows setting arbitrary values to an parameters hashtable called `rewriteParameters` ( `request.rewriteParameters[field] = value`)
