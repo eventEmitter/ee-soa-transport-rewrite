@@ -38,7 +38,7 @@ describe('Middleware', function(){
             });
 
             it('should set the template', function(){
-                assert.equal(req.template, 'index.html');
+                assert.equal(req.template['default'], 'index.html');
             });
 
             it('should rewrite a matching path', function(){

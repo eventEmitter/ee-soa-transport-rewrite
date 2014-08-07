@@ -1,4 +1,5 @@
-var assert      = require('assert');
+var   assert      = require('assert')
+    , log       = require('ee-log');
 
 var rewrites    = require('../lib/rewrite'),
     Request     = require('./utils/MockRequest');
@@ -21,7 +22,7 @@ describe('Rewrite', function(){
         overr   = new rewrites.Override({domain:'test.com', field:'override', value:'overwritten'}),
         ens     = new rewrites.Ensure({domain:'test.com', field:'select', value:'*'}),
 
-        template = new rewrites.Template({domain:'test.com', field:'template', value:'index.nunjucks.hmtl'}),
+        template = new rewrites.Template({domain:'test.com', value:'index.nunjucks.html'}),
         path = new rewrites.Path({domain:'test.com', path:/\/somewhere\/(\d+)/, value: '/somewhere-else/$1' }),
 
         option1 = new rewrites.Option({domain: 'test.com', field:'testosteron', value: true}),
@@ -111,13 +112,33 @@ describe('Rewrite', function(){
 
     describe('Template', function(){
         describe('#execute', function(){
+            var templateWithStatusCode = new rewrites.Template({field:404, value:'error/404.html'});
             assert(!MockRequest.template);
-            it('set the template property', function(){
+            it('should set should a template property (an object)', function(done){
                 template.execute(MockRequest, function(err){
-                    assert.equal(null, err);
-                    assert.equal('index.nunjucks.hmtl', MockRequest.template);
+                    assert(MockRequest.template);
+                    done(err);
                 });
             });
+
+            it('with the template bound to the "default" key if no field is set', function(){
+                assert('default' in MockRequest.template);
+                assert.equal('index.nunjucks.html', MockRequest.template['default']);
+            });
+
+            it('or a key such as an error key if one is set', function(done){
+                templateWithStatusCode.execute(MockRequest, function(err){
+                    assert('404' in MockRequest.template);
+                    assert.equal('error/404.html', MockRequest.template['404']);
+                    done(err);
+                });
+            });
+
+            it('without modifying the existing templates', function(){
+                assert('default' in MockRequest.template);
+                assert.equal('index.nunjucks.html', MockRequest.template['default']);
+            });
+
         });
 
     });
