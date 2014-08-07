@@ -15,7 +15,7 @@ The `name` of the rule determines the corresponding rewrite class:
   - **override** overrides the header `field` with `value`.
   - **method** overrides the method of the request if the `field` value matches the incoming request method (rewrites all if `field` is not set) with its `value`
   - **path** modifies the requested pathname `path` to `value` (use to map to api endpoints).
-  - **template** sets a template variable, basically `request.template = rule.value`
+  - **template** sets a template object on the request and binds the template to a key, namely the `field` value (if no `field` is set, it is bound to 'default'). This is useful to map templates to response codes.
   - **parameter** allows setting arbitrary values to an parameters hashtable called `rewriteParameters` ( `request.rewriteParameters[field] = value`)
 
 Further planned but not implemented or tested yet are:
@@ -121,6 +121,10 @@ Caches used with the cached loader must adhere to a simple interface:
     }
 
 #Changelog
+##v0.1.6
+    - added the possibility to bind the templates to a status code
+##v0.1.5
+    - added a method rewrite to switch http methods
 ##v0.1.2
     - added Option rewrite rule
     - values which are of type function are evaluated now
