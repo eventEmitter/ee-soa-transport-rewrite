@@ -26,7 +26,8 @@ describe('Extends', function(){
 
     it('should apply all the rules contained in the rule it is extending', function(){
         extender.execute(req, function(err){
-            assert.equal(req.template['default'], 'index.html');
+            //assert.equal(req.template['default'], 'index.html');
+            assert.equal(req.template, 'index.html');
             assert.equal(req.pathname, '/somewhere-else/10');
             // the following test would fail, because the extended rules would be evaluated before it
             // assert.equal(req.getHeader('range'), '1-20');

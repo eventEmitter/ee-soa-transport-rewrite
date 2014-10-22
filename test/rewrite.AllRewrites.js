@@ -122,19 +122,21 @@ describe('Rewrite', function(){
             });
 
             it('with the template bound to the "default" key if no field is set', function(){
-                assert('default' in MockRequest.template);
-                assert.equal('index.nunjucks.html', MockRequest.template['default']);
+                /*assert('default' in MockRequest.template);
+                assert.equal('index.nunjucks.html', MockRequest.template['default']);*/
+                assert.equal('index.nunjucks.html', MockRequest.template);
             });
 
             it('or a key such as an error key if one is set', function(done){
                 templateWithStatusCode.execute(MockRequest, function(err){
-                    assert('404' in MockRequest.template);
-                    assert.equal('error/404.html', MockRequest.template['404']);
+                    /*assert('404' in MockRequest.template);
+                    assert.equal('error/404.html', MockRequest.template['404']);*/
+                    assert.equal('error/404.html', MockRequest.template);
                     done(err);
                 });
             });
-
-            it('without modifying the existing templates', function(){
+            // this one will work completely different with the template assignment
+            it.skip('without modifying the existing templates', function(){
                 assert('default' in MockRequest.template);
                 assert.equal('index.nunjucks.html', MockRequest.template['default']);
             });
