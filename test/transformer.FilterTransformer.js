@@ -1,4 +1,5 @@
-var assert = require('assert');
+var   assert = require('assert')
+    , log   = require('ee-log');
 
 var transformers = require('../lib/transformer');
 
@@ -52,10 +53,11 @@ describe('FilterTransformer', function(){
             });
         });
 
-        it('creates an an error if the passed collection is malformed', function(){
+        it('creates an an error if the passed collection is malformed', function(done){
             transformer.transform('key2', malformedRules, function(err, result){
                 assert(!!err);
                 assert.equal(null, result);
+                done();
             });
         });
 
