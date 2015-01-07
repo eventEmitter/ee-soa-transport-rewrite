@@ -15,7 +15,7 @@ The `name` of the rule determines the corresponding rewrite class:
   - **override** overrides the header `field` with `value`.
   - **method** overrides the method of the request if the `field` value matches the incoming request method (rewrites all if `field` is not set) with its `value`
   - **path** modifies the requested pathname `path` to `value` (use to map to api endpoints).
-  - **template** sets a template object on the request and binds the template to a key, namely the `field` value (if no `field` is set, it is bound to 'default'). This is useful to map templates to response codes.
+  - **template** sets a template object on the request and binds the template to a key representing the status code of the response (saved in the `field` property. If no status is set, the template it is bound to a default key).
   - **parameter** allows setting arbitrary values to an parameters hashtable called `rewriteParameters` ( `request.rewriteParameters[field] = value`)
 
 Further planned but not implemented or tested yet are:
@@ -120,18 +120,18 @@ Caches used with the cached loader must adhere to a simple interface:
         , set:  function(key, value){}
     }
 
-#Changelog
-##v0.1.6
-    - added the possibility to bind the templates to a status code
-##v0.1.5
-    - added a method rewrite to switch http methods
-##v0.1.2
-    - added Option rewrite rule
-    - values which are of type function are evaluated now
-
 Different caches are always injected into the loaders which makes them inherently testable.
 
-  - Todo: Add prepend rules
-  - Todo: Add templating rules... probably an extends rule...
-  - Todo: The rule chaining happens "in place" which means the initial rewrite is modified when chained. This should be changed.
-  - Todo: Add caching
+#Changelog
+##v0.2.0
+
+    - added the possibility to bind the templates to a status code using the field value (if none set it is bound to a default parameter). The template itself now is an object with a resolve method which takes the status code as a parameter).
+    
+##v0.1.5
+
+    - added a method rewrite to switch http methods
+    
+##v0.1.2
+
+    - added Option rewrite rule
+    - values which are of type function are evaluated now
