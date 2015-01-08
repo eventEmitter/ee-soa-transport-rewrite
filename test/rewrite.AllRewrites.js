@@ -16,14 +16,16 @@ var MockRewrite = {
 };
 
 describe('Rewrite', function(){
+
     var rew     = new rewrites.Rewrite(),
         base    = new rewrites.Append({domain:'test.com', field:'filter', value:', deleted=null'}),
         app     = new rewrites.Append({domain:'test.com', field:'filter', value:', deleted=null'}),
         overr   = new rewrites.Override({domain:'test.com', field:'override', value:'overwritten'}),
         ens     = new rewrites.Ensure({domain:'test.com', field:'select', value:'*'}),
 
-        template = new rewrites.Template({domain:'test.com', value:'index.nunjucks.html'}),
-        path = new rewrites.Path({domain:'test.com', path:/\/somewhere\/(\d+)/, value: '/somewhere-else/$1' }),
+        template        = new rewrites.Template({domain:'test.com', value:'index.nunjucks.html'}),
+        templateWithPath = new rewrites.Template({domain:'test.com', value:'details.nunjucks.html', path: '/detail/'}),
+        path        = new rewrites.Path({domain:'test.com', path:/\/somewhere\/(\d+)/, value: '/somewhere-else/$1' }),
 
         option1 = new rewrites.Option({domain: 'test.com', field:'testosteron', value: true}),
         option2 = new rewrites.Option({domain: 'test.com', field:'something', value: 1000}),
@@ -33,6 +35,7 @@ describe('Rewrite', function(){
         param2 = new rewrites.Parameter({domain: 'test.com', field:'something', value: 1000}),
         param3 = new rewrites.Parameter({domain: 'test.com', field: 'whatTimeIsIt', value: function(){ return 'Flaava Flave'; }}),
         param4 = new rewrites.Parameter({domain: 'test.com', path: /\/images\/(\d)(\d).*/, field: 'matches', value: function(match){ return match; }}),
+
         imageParam = new rewrites.Parameter(
             {
                 domain: 'test.com',
@@ -111,9 +114,12 @@ describe('Rewrite', function(){
     });
 
     describe('Template', function(){
+
         describe('#execute', function(){
-            var templateWithStatusCode = new rewrites.Template({field:404, value:'error/404.html'});
+
+            var templateWithStatusCode = new rewrites.Template({ field:404, value:'error/404.html' });
             assert(!MockRequest.template);
+
             it('should set should a template property (an object)', function(done){
                 template.execute(MockRequest, function(err){
                     assert(MockRequest.template);
@@ -126,6 +132,14 @@ describe('Rewrite', function(){
                 assert.equal('index.nunjucks.html', MockRequest.template.resolve(1000));
             });
 
+            it('the default key can be overwritten by later invokations', function(done){
+                templateWithPath.execute(MockRequest, function(err){
+                    assert.equal('details.nunjucks.html', MockRequest.template.resolve());
+                    assert.equal('details.nunjucks.html', MockRequest.template.resolve(1000));
+                    done(err);
+                });
+            });
+
             it('or a key such as an error key if one is set', function(done){
                 templateWithStatusCode.execute(MockRequest, function(err){
                     assert.equal('error/404.html', MockRequest.template.resolve(404));
@@ -134,8 +148,9 @@ describe('Rewrite', function(){
             });
 
             it('without modifying the existing templates', function(){
-                assert.equal('index.nunjucks.html', MockRequest.template.resolve());
+                assert.equal('details.nunjucks.html', MockRequest.template.resolve());
             });
+
         });
     });
 
