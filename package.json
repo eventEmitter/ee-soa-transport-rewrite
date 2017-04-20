@@ -9,7 +9,7 @@
     }
     , "licence"                         : "MIT"
     , "engines": {
-        "node"                          : ">=v0.10.25"
+        "node"                          : ">=v7"
     }
     , "repository": {
           "url"                         : "https://github.com/eventEmitter/ee-soa-transport-rewrite"
@@ -19,13 +19,13 @@
         "url"                           : "https://github.com/eventEmitter/ee-soa-transport-rewrite/issues"
     }
     , "dependencies": {
-          "ee-class"                    : "1.0.*"
-        , "ee-types"                    : "0.1.*"
-        , "ee-event-emitter"            : "0.1.*"
-        , "ee-log"                      : "0.2.*"
+          "ee-class"                    : "1.*"
+        , "ee-types"                    : "2.*"
+        , "ee-event-emitter"            : "1.*"
+        , "ee-log"                      : "1.*"
     }
     , "devDependencies": {
-          "mocha"                       : "1.18.*"
+          "mocha"                       : "3.*"
     }
     , "optionalDependencies"            : {}
     , "keywords"                        : ["ee", "soa", "transport", "rest"]
