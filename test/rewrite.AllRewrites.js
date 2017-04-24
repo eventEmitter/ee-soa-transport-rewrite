@@ -126,7 +126,7 @@ describe('Rewrite', function(){
             const rule = new rewrites.Redirect({
                   omain:'test.com'
                 , status: 303
-                , target: (matches, res) => {
+                , target: (matches, req, res) => {
                     return `/hui/${matches[1]}`
                 } 
                 , path: /magazine\/issues\/([^\/]+)/i
@@ -147,7 +147,7 @@ describe('Rewrite', function(){
             const rule = new rewrites.Redirect({
                   omain:'test.com'
                 , status: 303
-                , target: (matches, res) => {
+                , target: (matches, req, res) => {
                     res.setHeader('Location', `/hui/${matches[1]}`);
                     res.send(307);
                 } 
