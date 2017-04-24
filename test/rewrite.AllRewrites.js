@@ -1,15 +1,16 @@
-var   assert      = require('assert')
-    , log       = require('ee-log');
+const assert      = require('assert');
+const log         = require('ee-log');
 
-var rewrites    = require('../lib/rewrite'),
-    Request     = require('./utils/MockRequest');
+const rewrites    = require('../lib/rewrite');
+const Request     = require('./utils/MockRequest');
+const Response    = require('./utils/MockResponse');
 
 
 var MockRequest = new Request();
 
 var MockRewrite = {
     executed: 0
-    , execute: function(request, callback){
+    , execute: function(request, response, callback){
         this.executed ++;
         callback(null);
     }
@@ -57,7 +58,7 @@ describe('Rewrite', function(){
     });
 
     it('should execute the callback on execution', function(){
-        rew.execute(MockRequest, function(err){
+        rew.execute(MockRequest, null, function(err){
             assert.equal(null, err);
         });
     });
@@ -69,7 +70,7 @@ describe('Rewrite', function(){
         assert(re.hasChildren());
         assert.equal(3, re.length);
 
-        re.execute(req, function(err){
+        re.execute(req, null, function(err){
             assert.equal(null, err);
             assert.equal('overwritten', req.getHeader('override'));
             assert.equal('id > 10, deleted=null', req.getHeader('filter'));
@@ -77,17 +78,106 @@ describe('Rewrite', function(){
         });
     });
 
+
+
+
+    describe('Redirect', function() {
+        it('should send the response', function() {
+            const request = new Request('test.com', '/de/magazine/issues/current');
+            const response = new Response();
+            const rule = new rewrites.Redirect({
+                  omain:'test.com'
+                , status: 303
+                , target: '/test'
+                , path: /magazine\/issues\/([^\/]+)/i
+            });
+
+            rule.execute(request, response, function(err, stop) {
+                assert.equal(err, true);
+                assert.equal(stop, true);
+                assert.equal(response.status, 303);
+                assert.equal(response.isSent, true);
+                assert.equal(response.getHeader('Location'), '/test');
+            });
+        });
+
+        it('should replace parts correctly', function() {
+            const request = new Request('test.com', '/de/magazine/issues/current');
+            const response = new Response();
+            const rule = new rewrites.Redirect({
+                  omain:'test.com'
+                , status: 303
+                , target: '/test/$1'
+                , path: /magazine\/issues\/([^\/]+)/i
+            });
+
+            rule.execute(request, response, function(err, stop) {
+                assert.equal(err, true);
+                assert.equal(stop, true);
+                assert.equal(response.status, 303);
+                assert.equal(response.isSent, true);
+                assert.equal(response.getHeader('Location'), '/test/current');
+            });
+        });
+
+        it('should accept functions to create targets', function() {
+            const request = new Request('test.com', '/de/magazine/issues/current');
+            const response = new Response();
+            const rule = new rewrites.Redirect({
+                  omain:'test.com'
+                , status: 303
+                , target: (matches, res) => {
+                    return `/hui/${matches[1]}`
+                } 
+                , path: /magazine\/issues\/([^\/]+)/i
+            });
+
+            rule.execute(request, response, function(err, stop) {
+                assert.equal(err, true);
+                assert.equal(stop, true);
+                assert.equal(response.status, 303);
+                assert.equal(response.isSent, true);
+                assert.equal(response.getHeader('Location'), '/hui/current');
+            });
+        });
+
+        it('should be able to directly send responses', function() {
+            const request = new Request('test.com', '/de/magazine/issues/current');
+            const response = new Response();
+            const rule = new rewrites.Redirect({
+                  omain:'test.com'
+                , status: 303
+                , target: (matches, res) => {
+                    res.setHeader('Location', `/hui/${matches[1]}`);
+                    res.send(307);
+                } 
+                , path: /magazine\/issues\/([^\/]+)/i
+            });
+
+            rule.execute(request, response, function(err, stop) {
+                assert.equal(err, true);
+                assert.equal(stop, true);
+                assert.equal(response.status, 307);
+                assert.equal(response.isSent, true);
+                assert.equal(response.getHeader('Location'), '/hui/current');
+            });
+        });
+    });
+
+
+
+
+
     describe('Override', function(){
         describe('#execute', function(){
             assert.equal('toOverride', MockRequest.getHeader('override'));
             it('should override the specified header', function(){
-                overr.execute(MockRequest, function(err){
+                overr.execute(MockRequest, null, function(err){
                     assert.equal(null, err);
                     assert.equal('overwritten', MockRequest.getHeader('override'));
                 });
             })
         });
-
     });
 
     describe('Ensure', function(){
@@ -97,14 +187,14 @@ describe('Rewrite', function(){
         describe('#execute', function(){
             assert(!MockRequest.hasHeader('select'));
             it('should set the header if absent', function(){
-                ens.execute(MockRequest, function(err){
+                ens.execute(MockRequest, null, function(err){
                     assert.equal(null, err);
                     assert.equal('*', MockRequest.getHeader('select'));
                 });
             });
 
             it('should leave present headers untouched', function(){
-                langens.execute(MockRequest, function(err){
+                langens.execute(MockRequest, null, function(err){
                     assert.equal(null, err);
                     assert.equal('en', MockRequest.getHeader('language'));
                 });
@@ -121,7 +211,7 @@ describe('Rewrite', function(){
             assert(!MockRequest.template);
 
             it('should set should a template property (an object)', function(done){
-                template.execute(MockRequest, function(err){
+                template.execute(MockRequest, null, function(err){
                     assert(MockRequest.template);
                     done(err);
                 });
@@ -133,7 +223,7 @@ describe('Rewrite', function(){
             });
 
             it('the default key can be overwritten by later invokations', function(done){
-                templateWithPath.execute(MockRequest, function(err){
+                templateWithPath.execute(MockRequest, null, function(err){
                     assert.equal('details.nunjucks.html', MockRequest.template.resolve());
                     assert.equal('details.nunjucks.html', MockRequest.template.resolve(1000));
                     done(err);
@@ -141,7 +231,7 @@ describe('Rewrite', function(){
             });
 
             it('or a key such as an error key if one is set', function(done){
-                templateWithStatusCode.execute(MockRequest, function(err){
+                templateWithStatusCode.execute(MockRequest, null, function(err){
                     assert.equal('error/404.html', MockRequest.template.resolve(404));
                     done(err);
                 });
@@ -158,7 +248,7 @@ describe('Rewrite', function(){
         describe('#execute', function(){
             assert.equal('id > 10', MockRequest.getHeader('filter'));
             it('should append the specified value', function(){
-                app.execute(MockRequest, function(err){
+                app.execute(MockRequest, null, function(err){
                     assert.equal(null, err);
                     assert.equal('id > 10, deleted=null', MockRequest.getHeader('filter'));
                 });
@@ -171,7 +261,7 @@ describe('Rewrite', function(){
         describe('#execute', function(){
             assert.equal('/somewhere/10', MockRequest.pathname);
             it('should transform the path', function(){
-                path.execute(MockRequest, function(err){
+                path.execute(MockRequest, null, function(err){
                     assert.equal(null, err);
                     assert.equal('/somewhere-else/10', MockRequest.pathname);
                 });
@@ -183,7 +273,7 @@ describe('Rewrite', function(){
         describe('#execute', function(){
             option1.then(option2).then(option3);
 
-            option1.execute(MockRequest, function(err){
+            option1.execute(MockRequest, null, function(err){
                 assert(!err);
                 it('should append a rewriteOptions object', function(){
                     assert('rewriteOptions' in MockRequest);
@@ -206,7 +296,7 @@ describe('Rewrite', function(){
             param1.then(param2).then(param3).then(param4).then(imageParam);
 
             var req = new Request('test.com', '/images/100/some-seo-name/crop/800/600');
-            param1.execute(req, function(err){
+            param1.execute(req, null, function(err){
                 assert(!err);
                 it('should append a rewriteParameters object', function(){
                     assert('rewriteParameters' in req);
@@ -244,21 +334,21 @@ describe('Rewrite', function(){
                 , requestPost = new Request('test.com', null, 'post');
 
             it('should leave requests that do not match the incoming method untouched', function(done){
-                getToPut.execute(requestPost, function(err){
+                getToPut.execute(requestPost, null, function(err){
                     assert.equal('post', requestPost.method);
                     done(err);
                 });
             });
 
             it('should act case insensitively and set the correct new method it the incoming method matches', function(done){
-                getToPut.execute(request, function(err){
+                getToPut.execute(request, null, function(err){
                     assert.equal('put', request.method);
                     done(err);
                 });
             });
 
             it('should modify every request if the incoming method is not set', function(done){
-                toPut.execute(requestPost, function(err){
+                toPut.execute(requestPost, null, function(err){
                     assert.equal('put', requestPost.method);
                     done(err);
                 });

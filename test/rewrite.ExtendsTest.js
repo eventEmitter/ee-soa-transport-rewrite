@@ -25,7 +25,7 @@ describe('Extends', function(){
     var req = new Request('rewritten.com');
 
     it('should apply all the rules contained in the rule it is extending', function(){
-        extender.execute(req, function(err){
+        extender.execute(req, null, function(err){
             assert.equal(req.template.resolve(), 'index.html');
             assert.equal(req.pathname, '/somewhere-else/10');
             // the following test would fail, because the extended rules would be evaluated before it
