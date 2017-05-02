@@ -22,7 +22,7 @@
           "ee-class"                    : "1.*"
         , "ee-types"                    : "2.*"
         , "ee-event-emitter"            : "1.*"
-        , "ee-log"                      : "1.*"
+        , "ee-log"                      : "^2.0.2"
     }
     , "devDependencies": {
           "mocha"                       : "3.*"

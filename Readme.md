@@ -1,4 +1,6 @@
 #ee-soa-transport-rewrite
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/eventEmitter/ee-soa-transport-rewrite.svg)](https://greenkeeper.io/)
 Middleware to modify requests sent to a service. This module is under heavy development.
 
 ##Rewrites
